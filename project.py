@@ -131,28 +131,49 @@ final_data.drop(columns=["Section", "Email"], inplace=True)
 # "Homework 9", "Homework 9 - Max Points",
 # "Homework 10", "Homework 10 - Max Points"], inplace=True)
 
-hwGrade = 0
+hwGrade1 = 0
+hwGrade2 = 0
 for i in range(1, 11):
-    hwGrade += final_data[f"Homework {i}"]/final_data[f"Homework {i} - Max Points"]
+    hwGrade1 += final_data[f"Homework {i}"]
+    hwGrade2 += final_data[f"Homework {i} - Max Points"]
     final_data.drop(columns=[f"Homework {i}", f"Homework {i} - Max Points"], inplace=True)
-final_data['Homework Grade'] = hwGrade*9
+final_data['Homework Grade'] = (hwGrade1/hwGrade2)*100
 
-examGrade = 0
+examGrade1 = 0
+examGrade2 = 0
 for i in range(1, 4):
-    examGrade += final_data[f"Exam {i}"]/final_data[f"Exam {i} - Max Points"]
+    examGrade1 += final_data[f"Exam {i}"]
+    examGrade2 += final_data[f"Exam {i} - Max Points"]
     final_data.drop(columns=[f"Exam {i}", f"Exam {i} - Max Points"], inplace=True)
-final_data['Exam Grade'] = examGrade*5
+final_data['Exam Grade'] = examGrade1/examGrade2*100
 
-quizGrade = 0
+quizGrade1 = 0
+quizGrade2 = 0
 for i in range(1, 6):
     qgrades = np.array(final_data[f'Quiz{i}'])
-    quizGrade += final_data[f"Quiz{i}"]/qgrades.max()
+    quizGrade1 += final_data[f"Quiz{i}"]
+    quizGrade2 += qgrades.max()
     final_data.drop(columns=[f"Quiz{i}"], inplace=True)
-final_data['Quiz Grade'] = quizGrade*3
+final_data['Quiz Grade'] = quizGrade1/quizGrade2*100
 
 finalGrade = 0
-finalGrade += final_data["Homework Grade"] + final_data["Exam Grade"] + final_data["Quiz Grade"]
+finalGrade += final_data["Homework Grade"]/2 + final_data["Exam Grade"]*3/10 + final_data["Quiz Grade"]/5
 final_data['Final Grade'] = finalGrade
+# print(finalGrade[0])
+
+letterGrade=[]
+for i in range(len(finalGrade)):
+    if finalGrade[i]>=90:
+        letterGrade.append('A')
+    elif finalGrade[i]>=80:
+        letterGrade.append('B')
+    elif finalGrade[i]>=70:
+        letterGrade.append('C')
+    elif finalGrade[i]>=60:
+        letterGrade.append('D')
+    else:
+        letterGrade.append('F')
+final_data['Letter Grade'] = letterGrade
 
 # final_data['Exam grade'] = (final_data['Exam 1'] / final_data['Exam 1 - Max Points'] 
 # + final_data['Homework 2'] / final_data['Homework 2 - Max Points']
@@ -176,4 +197,4 @@ final_data['Final Grade'] = finalGrade
 # "Homework 9", "Homework 9 - Max Points"
 # "Homework 10", "Homework 10 - Max Points"], inplace=True)
 
-print(final_data.head(3))
+print(final_data.to_string())
