@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
 from pymongo import MongoClient
+from pydantic import BaseModel
 
 myproject = FastAPI()
 
@@ -33,6 +34,35 @@ query parameter
 request body (database)
 """
 
+class Item(BaseModel):
+    name: str
+    description: str=None
+    price: float
+    tax: float=None
+# class ID(BaseModel):
+#     user_id=str
+#     useer_pw=str
+
+# class search(BaseModel):
+#     keyword=str
+
+# @myproject.post(".list/")
+# async def create_item(item: Item):
+#     return item
+
+@myproject.post(".list/")
+async def create_item(item: Item):
+    data=item.dict()
+    myproject.database.suyeon.insert_one(data)
+    return {"message": "The data is stored successfully!"}
+    return item
+
+@myproject.get("/list/{item_name}")
+async def get_item(item_name: str):
+    data = myproject.database.students.find_one({"name": item_name})
+    data["_id"] = str(data["_id"])
+    return data
+
 @myproject.get("/index")
 async def index():
     return {"message":"Welcome to FastAPI world!"}
@@ -64,6 +94,20 @@ async def get_item(item_id:int):
 async def get_item(item_id:int, user_id: int):
     return inventory[item_id], user_id
 
+
+
 # path parameter+query parameter
 # 다음 시간에 syntax 까지
 
+# gt, lt, ge, le
+@myproject.get("/list/{item_id}")
+async def get_item(item_id: int=Path(None, description="Blahblah", le=1)): 
+    return inventory[item_id]
+
+# request body
+@myproject.get("/list/{item_id}")
+async def get_item(item_id: int=Path(None, description="Blahblah", le=1)): 
+    return inventory[item_id]
+
+# client --> server : request
+# server --> client : response
