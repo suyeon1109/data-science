@@ -1,3 +1,4 @@
+from re import S
 from fastapi import FastAPI, Path
 from pymongo import MongoClient
 from pydantic import BaseModel
@@ -25,6 +26,16 @@ class User(BaseModel):
     password:str
     age:int
 
+class Questions(BaseModel):
+    title:str
+    content:str
+    user_id:str
+
+class Answer(BaseModel):
+    question_id:str
+    content: str
+    user_id:str
+
 @app.post("/user") # 유저 생성하기
 def create_user(user:User):
     user_info=user.dict()
@@ -51,17 +62,47 @@ async def delete(user_id:str):
     result = app.database.users.delete_one({"_id": ObjectId(user_id)})
 
 @app.post("/questions")	# 질문 생성하기
-async def create_question(q:str):
+async def create_question(q:Questions):
     data = q.dict()
     result = app.database.questions.insert_one(data)
     # return 
 
-# @app.get("/questions")	# 모든 질문 가져오기
-# @app.get("/questions/{question_id}") # 특정 질문 1개 가져오기
-# # 질문 수정하기
-# # 질문 삭제하기
+@app.get("/questions")	# 모든 질문 가져오기
+async def get_all_questions(questions:Questions):
+    qs = app.database.questions.find()
+    return qs
 
-# @app.post("/questions/{question_id}/answers")	# 특정 질문에 대한 답변 생성하기
-# # 특정 질문에 대한 모든 답변 가져오기
-# # 답변 수정하기
-# # 답변 삭제하기
+@app.get("/questions/{question_id}") # 특정 질문 1개 가져오기
+async def get_question(question_id:str):
+    q = app.database.questions.find_one({"_id": ObjectId(question_id)})
+    return q
+
+@app.put("/questions/{question_id}") # 질문 수정하기
+async def edit_question(question_id:str, revision:Questions):
+    data = revision.dict()
+    result = app.database.questions.update_one({"_id": ObjectId(question_id)}, {"$set": data})
+
+@app.delete("/questions/{question_id}")	# 질문 삭제하기
+async def delete(question_id:str):
+    result = app.database.questions.delete_one({"_id": ObjectId(question_id)})
+
+@app.post("/questions/{question_id}/answers")	# 특정 질문에 대한 답변 생성하기
+async def create_answers(question_id:str,answer:Answer):
+    data = answer.dict()
+    result = app.database.answers.insert_one(data)
+
+@app.get("/questions/{question_id}/answers")   # 특정 질문에 대한 모든 답변 가져오기
+async def get_answers(question_id:str):
+    docs = app.database.answers.find({"question_id": question_id})
+    for doc in docs:
+        doc["_id"]=str(doc["_id"])
+        print(doc)
+
+@app.put("/questions/{question_id}/answers") # 답변 수정하기
+async def edit_answer(question_id:str, edit_a:Answer):
+    data = edit_a.dict()
+    result = app.databse.answers.update_one({"question_id": question_id}, {"$set": data})
+
+@app.delete("/questions/{question_id}/answers") # 답변 삭제하기
+async def delete_answer(question_id:str):
+    result=app.database.questions.delete_one({"question_id": question_id})

@@ -54,7 +54,7 @@ class Item(BaseModel):
 async def create_item(item: Item):
     data=item.dict()
     myproject.database.suyeon.insert_one(data)
-    return {"message": "The data is stored successfully!"}
+    return {"message": "The data is stored successfully."}
     return item
 
 @myproject.get("/list/{item_name}")
@@ -94,19 +94,14 @@ async def get_item(item_id:int):
 async def get_item(item_id:int, user_id: int):
     return inventory[item_id], user_id
 
-
-
-# path parameter+query parameter
-# 다음 시간에 syntax 까지
-
 # gt, lt, ge, le
 @myproject.get("/list/{item_id}")
-async def get_item(item_id: int=Path(None, description="Blahblah", le=1)): 
+async def get_item(item_id: int=Path(None, description="accessing to the user info", le=1)): 
     return inventory[item_id]
 
 # request body
 @myproject.get("/list/{item_id}")
-async def get_item(item_id: int=Path(None, description="Blahblah", le=1)): 
+async def get_item(item_id: int=Path(None, description="reading the user info", le=1)): 
     return inventory[item_id]
 
 # client --> server : request

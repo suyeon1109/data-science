@@ -22,7 +22,6 @@ class BlogEntry(BaseModel):
     title: str
     content: str
 
-
 @app.post("/submit")
 async def submit(entry: BlogEntry):
     data = entry.dict()
