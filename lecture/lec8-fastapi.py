@@ -50,7 +50,7 @@ class Item(BaseModel):
 # async def create_item(item: Item):
 #     return item
 
-@myproject.post(".list/")
+@myproject.post("/list/")
 async def create_item(item: Item):
     data=item.dict()
     myproject.database.suyeon.insert_one(data)
