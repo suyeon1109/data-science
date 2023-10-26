@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("lg-sample-data/Car details v3.csv")
+df = pd.read_csv("ml-sample-data/Car details v3.csv")
 unrelevent = ['name', 'torque', 'mileage','engine','max_power','fuel','owner','transmission','seller_type','max_power']
 df = df.drop(columns=unrelevent)
 df = df.dropna(axis=0)
