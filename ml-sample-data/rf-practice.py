@@ -23,3 +23,4 @@ print(df.head(10))
 
 x = df[['torque', 'mileage','engine','max_power','fuel','max_power','selling_price']]
 y = df[['seats']]
+
